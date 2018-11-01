@@ -25,6 +25,7 @@ class TagRow extends React.Component {
                 checked: 'checked'
             });
         }
+        //console.log
     }
     render() {
         return(
