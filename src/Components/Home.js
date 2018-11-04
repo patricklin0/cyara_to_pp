@@ -7,6 +7,7 @@ class Home extends Component {
     render() {
         return (
             <div>
+                <h1>QA Tools Home page</h1>
                 <Link to='/Transformer'>Transformer</Link>
             </div>
         );
