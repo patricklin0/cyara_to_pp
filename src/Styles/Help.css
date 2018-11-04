@@ -1,0 +1,52 @@
+.FeatureTitle {
+    text-align: left;
+}
+
+.HelpParagraph {
+    text-align: left;
+}
+
+.HelpSteps {
+    padding-top: 10px;
+}
+
+.HelpSteps > ul {
+    margin-bottom: 3px !important;
+    padding-left: 20px !important;
+}
+
+.buffer {
+    height: 50px;
+}
+
+.buffer-30 {
+    height: 25px;
+}
+
+.export-screenshot {
+    border: 1px solid black;
+
+}
+
+.HelpPage {
+    margin-left: 0px !important;
+}
+
+#class-navigation > ul {
+    padding-left: 0px;
+    text-align: center;
+}
+
+#class-navigation > ul > button {
+    border: 0px;
+    width: 100%;
+}
+
+.noHover{
+    pointer-events: none;
+}
+
+.HelpContent {
+    padding-left:30px;
+    padding-right: 30px;
+}

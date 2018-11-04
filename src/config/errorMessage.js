@@ -1,0 +1,1 @@
+export var errorMessage = '\nPlease email patrick.lin@genesys.com with a screenshot of this message and attach the import file.';

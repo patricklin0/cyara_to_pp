@@ -1,9 +1,12 @@
 import '../Styles/Transformer.css'
+import { errorMessage as alertErrorMessage } from '../config/errorMessage';
 import { extraReplacements, tags } from '../config/config'
 
 import React from 'react';
 import XLSX from 'xlsx';
 import { Button, Col } from 'react-bootstrap'
+
+import Papa from 'papaparse';
 
 class TagRow extends React.Component {
     constructor(props) {
@@ -25,7 +28,6 @@ class TagRow extends React.Component {
                 checked: 'checked'
             });
         }
-
     }
     render() {
         return(
@@ -45,13 +47,17 @@ class Transformer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            output: '',
             errorMessage: '',
             cPPChecked: true,
             jPPChecked: false,
+            cjChecked: false,
             radio: 'cPP'
         }
         this.handleSubmit = this.handleSubmit.bind(this);
         this.pickRadio = this.pickRadio.bind(this);
+        this.cycleParse = this.cycleParse.bind(this);
+
         this.fileInput = React.createRef();
     }
     cyaraParse(text) {
@@ -62,8 +68,8 @@ class Transformer extends React.Component {
             var xmlDoc = parser.parseFromString(text, 'text/xml');
             var TestCases = xmlDoc.getElementsByTagName('TestCase');
             var Blocks = xmlDoc.getElementsByTagName('Block')
-            console.log(TestCases)
-            console.log(Blocks)
+            //console.log(TestCases)
+            //console.log(Blocks)
             //var rows = xmlDoc.getElementsByTagName('Row');
             for(var i = 0; i < TestCases.length; i++) {
                 var completedRow = [];
@@ -79,11 +85,13 @@ class Transformer extends React.Component {
 
                 var replacementCount = 0;
                 var replacements = [];
-                for(var a = 0; a < TestCases[i].children[12].children[1].children.length; a++) {
-                    for(var b = 0; b < TestCases[i].children[12].children[1].children[a].attributes.length; b++) {
-                        if(TestCases[i].children[12].children[1].children[a].attributes[b].nodeName === 'name') {
-                            if(TestCases[i].children[12].children[1].children[a].attributes[b].nodeValue === 'Empty') continue;
-                            replacements.push([TestCases[i].children[12].children[1].children[a].attributes[b].nodeValue, TestCases[i].children[12].children[1].children[a].innerHTML]);
+                if(TestCases[i].children[12].children.length > 0) {
+                    for(var a = 0; a < TestCases[i].children[12].children[1].children.length; a++) {
+                        for(var b = 0; b < TestCases[i].children[12].children[1].children[a].attributes.length; b++) {
+                            if(TestCases[i].children[12].children[1].children[a].attributes[b].nodeName === 'name') {
+                                if(TestCases[i].children[12].children[1].children[a].attributes[b].nodeValue === 'Empty') continue;
+                                replacements.push([TestCases[i].children[12].children[1].children[a].attributes[b].nodeValue, TestCases[i].children[12].children[1].children[a].innerHTML]);
+                            }
                         }
                     }
                 }
@@ -156,10 +164,11 @@ class Transformer extends React.Component {
 
                 completedRow.push(steps);
                 completedRow.push(results);
-                console.log(steps);
+                //console.log(steps);
                 data.push(completedRow);
             }
         } catch (e) {
+            alert(e + alertErrorMessage);
             console.log(e);
         }
         try {
@@ -170,6 +179,7 @@ class Transformer extends React.Component {
             // Generate Excel File 
             XLSX.writeFile(wb, "sheetjs.xlsx");
         } catch (e) {
+            alert(e + alertErrorMessage);;
             console.log(e);
         }
     }
@@ -249,6 +259,7 @@ class Transformer extends React.Component {
                 data.push(completedRow);
             }
         } catch (e) {
+            alert(e + alertErrorMessage);
             console.log(e);
         }
         try {
@@ -260,6 +271,7 @@ class Transformer extends React.Component {
             // Generate Excel File
             XLSX.writeFile(wb, "sheetjs.xlsx");
         } catch (e) {
+            alert(e + alertErrorMessage);;
             console.log(e);
         }
     }
@@ -314,15 +326,40 @@ class Transformer extends React.Component {
         return finalText;
         */
     }
+    cycleParse(text) {
+        var parsed = Papa.parse(text);
+        var searchString = 'id in (';
+        var comma = '';
+        for(var i = 4; i < parsed.data.length - 1; i++) {
+            searchString += comma + '"' + parsed.data[i][0] + '"';
+            comma = ',';
+        }
+        searchString += ')';
+        try {
+            //console.log(searchString)
+            this.setState({
+                output: searchString
+            })
+        } catch (e) {
+            console.log(e)
+        }
+    }
     handleSubmit(event) {
+        var xml = ['jPP', 'cPP'];
+        var csv = ['cj'];
+
         event.preventDefault();
         if(this.fileInput.current.files.length == 0) {
             this.setState({
                 errorMessage: 'No file chosen'
             })
-        } else if(this.fileInput.current.files[0].name.substr(this.fileInput.current.files[0].name.length - 4) !== '.xml') {
+        } else if(xml.includes(this.state.radio) && this.fileInput.current.files[0].name.substr(this.fileInput.current.files[0].name.length - 4) !== '.xml') {
             this.setState({
                 errorMessage: 'Not an .XML file'
+            })
+        } else if(csv.includes(this.state.radio) && this.fileInput.current.files[0].name.substr(this.fileInput.current.files[0].name.length - 4) !== '.csv') {
+            this.setState({
+                errorMessage: 'Not an .CSV file'
             })
         } else {
             this.setState({
@@ -342,6 +379,8 @@ class Transformer extends React.Component {
                     this.cyaraParse(fileReader.result);
                 } else if(this.state.radio === 'jPP') {
                     this.jiraParse(fileReader.result);
+                } else if(this.state.radio === 'cj') {
+                    this.cycleParse(fileReader.result);
                 } else {
                 }
             };
@@ -364,13 +403,22 @@ class Transformer extends React.Component {
             this.setState({
                 jPPChecked: true,
                 cPPChecked: false,
+                cjChecked: false,
                 radio: 'jPP'
             });
         } else if(event.target.id === 'cPP') {
             this.setState({
                 jPPChecked: false,
                 cPPChecked: true,
+                cjChecked: false,
                 radio: 'cPP'
+            });
+        } else if(event.target.id === 'cj') {
+            this.setState({
+                jPPChecked: false,
+                cPPChecked: false,
+                cjChecked: true,
+                radio: 'cj'
             });
         } else {
             console.log("Radio button Error.");
@@ -390,6 +438,12 @@ class Transformer extends React.Component {
                                 <div id='FilePicker'>
                                     <input type='file' ref={this.fileInput}/>
                                 </div>
+                            </div>
+                            <div>
+                                Output
+                            </div>
+                            <div id='outputs'>
+                                <textarea value={this.state.output} />
                             </div>
                         </Col>
                         <Col md={6} className='max-height'>
@@ -414,6 +468,14 @@ class Transformer extends React.Component {
                                             </Col>
                                             <Col md={10}>
                                                 Jira To PureProject
+                                            </Col>
+                                        </div>
+                                        <div className='RadioRow'>
+                                            <Col md={2}>
+                                                <input type='radio' checked={this.state.cjChecked} id='cj' onChange={this.pickRadio}/>
+                                            </Col>
+                                            <Col md={10}>
+                                                Cycle to Jira
                                             </Col>
                                         </div>
                                         <div id='ButtonPane'>

@@ -8,8 +8,6 @@
 }
 
 .ContentPane {
-    height: 40vh;
-
     border: 1px solid black;
     border-radius: 5px;
     margin-left: 30%;
@@ -68,4 +66,14 @@
 
 #errorMessage {
     color: red;
+}
+
+#outputs {
+    height: 100%;
+    min-height: 300px;
+}
+
+#outputs > textarea {
+    min-height: 250px;
+    width: 100% !important;
 }

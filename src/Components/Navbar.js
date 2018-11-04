@@ -8,7 +8,7 @@ const NavbarBar = () => (
     <div className='nav-container'>
         <Nav>
             <LinkContainer to='/'>
-                <Image border='0' src={logo} rounded/>
+                <Image className='logo' border='0' src={logo} rounded/>
             </LinkContainer>
         </Nav>
         <Nav>
