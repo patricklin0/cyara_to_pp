@@ -459,7 +459,7 @@ class Transformer extends React.Component {
                                                 <input type='radio' checked={this.state.cPPChecked} id='cPP' onChange={this.pickRadio}/>
                                             </Col>
                                             <Col md={10}>
-                                                Cyara To PureProject
+                                                Cyara to PureProject
                                             </Col>
                                         </div>
                                         <div className='RadioRow'>
@@ -467,7 +467,7 @@ class Transformer extends React.Component {
                                                 <input type='radio' checked={this.state.jPPChecked} id='jPP' onChange={this.pickRadio}/>
                                             </Col>
                                             <Col md={10}>
-                                                Jira To PureProject
+                                                Jira to PureProject
                                             </Col>
                                         </div>
                                         <div className='RadioRow'>
