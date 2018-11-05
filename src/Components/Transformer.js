@@ -342,6 +342,7 @@ class Transformer extends React.Component {
                 output: searchString
             })
         } catch (e) {
+            alert(e + alertErrorMessage);;
             console.log(e)
         }
     }
@@ -387,6 +388,7 @@ class Transformer extends React.Component {
             };
             fileReader.readAsText(file);
         } catch (e) {
+            alert(e + alertErrorMessage);;
             console.log(e);
         }
     }
