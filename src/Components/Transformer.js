@@ -5,6 +5,7 @@ import { extraReplacements, tags } from '../config/config'
 import React from 'react';
 import XLSX from 'xlsx';
 import { Button, Col } from 'react-bootstrap'
+import { Link } from 'react-router-dom';
 
 import Papa from 'papaparse';
 
@@ -429,6 +430,7 @@ class Transformer extends React.Component {
             <div className=''>
                 <div>
                     <h1>PureProject Formatter</h1>
+                    <Link to='/Help'>Help</Link>
                 </div>
                 <div className='PageContent'>
                     <div className='ContentPane'>

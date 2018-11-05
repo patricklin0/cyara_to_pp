@@ -8,7 +8,8 @@ class Home extends Component {
         return (
             <div>
                 <h1>QA Tools Home page</h1>
-                <Link to='/Transformer'>Transformer</Link>
+                <Link to='/Transformer'>Transformer</Link><br />
+                <Link to='/Help'>Help</Link>
             </div>
         );
     }

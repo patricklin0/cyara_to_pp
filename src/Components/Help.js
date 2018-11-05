@@ -7,6 +7,9 @@ import CyaraToPureProject_ScreenShot3 from '../resources/CyaraToPureProject_Scre
 import JiraToPureProject_ScreenShot1 from '../resources/JiraToPureProject_ScreenShot1.png';
 import JiraToPureProject_ScreenShot2 from '../resources/JiraToPureProject_ScreenShot2.png';
 import JiraToPureProject_ScreenShot3 from '../resources/JiraToPureProject_ScreenShot3.png';
+import CycleToJira_ScreenShot1 from '../resources/CycleToJira_ScreenShot1.png';
+import CycleToJira_ScreenShot2 from '../resources/CycleToJira_ScreenShot2.png';
+import CycleToJira_ScreenShot3 from '../resources/CycleToJira_ScreenShot3.png';
 
 import { Button, Col, Image } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -18,6 +21,7 @@ class Help extends Component {
             page: 'cPP'
         };
         this.navigate = this.navigate.bind(this);
+        this.redirect = this.redirect.bind(this);
     }
     navigate(e) {
         this.setState({
@@ -32,6 +36,13 @@ class Help extends Component {
 
         }*/
     }
+    redirect(e) {
+        e.preventDefault();
+        this.setState({
+            page: e.target.getAttribute('pageid')
+        });
+        window.scroll(0, window.pageYOffset - this.props.scrollStepInPx);
+    }
     helpContent(page) {
         let content;
         if(page === 'cPP') {
@@ -39,8 +50,7 @@ class Help extends Component {
             <div>
                 <h3 className='FeatureTitle'>Cyara to PureProject</h3>
                 <div className='HelpParagraph'>
-                    This option will transform a file exported from Cyara and transforms it into a file that can be consumed by PureProject's import function. <br />
-                    *The input file should be (XML).
+                    This option will take a file exported from Cyara and transforms it into a file that can be consumed by PureProject's import function. <br />
                     <div className='HelpSteps'>
                         <ul>1. Select the test cases you need for export</ul>
                         <ul>2. Hit [Action > Export]</ul>
@@ -60,11 +70,11 @@ class Help extends Component {
                 <h3 className='FeatureTitle'>Jira to PureProject</h3>
                 <div className='HelpParagraph'>
                     This option will transform a file exported from Jira and transforms it into a file can be consued by PureProject's import function. <br />
-                    *This function is intended to pair with an export file from a search result page in Jira. The input file should be (XML).
+                    *This function is only intended to be used with an export file from a search result page in Jira.
                     <div className='HelpSteps'>
                         <ul>1. Make a search within the Jira's search function</ul>
                         <ul><Image border='0' src={JiraToPureProject_ScreenShot1} rounded/></ul>
-                        <ul>2. On the top right, hit right click on [Export > XML] from the top right of the search page. This will output an XML file ('SearchRequest.xml').</ul>
+                        <ul>2. On the top right, hit right click and 'Save link as...' on [Export > XML] from the top right of the search page. This will output an XML file ('SearchRequest.xml').</ul>
                         <ul><Image border='0' src={JiraToPureProject_ScreenShot2} rounded/></ul>
                         <ul>3. Navigate to the <Link to='/Transformer'>Transformer</Link> page and select the 'SearchRequest.xml' file as in input. Make sure the 'Jira to PureProject' radio button is selected. Hit 'Transform'.</ul>
                         <ul><Image border='0' src={JiraToPureProject_ScreenShot3} rounded/></ul>
@@ -76,7 +86,25 @@ class Help extends Component {
         } else if(page === 'cj') {
             content =
             <div>
-                Cycle to Jira TBD
+                <h3 className='FeatureTitle'>Cycle to Jira</h3>
+                <div className='HelpParagraph'>
+                    This option will transform a file exported from a cycle in Jira and transforms it into a Jira search string. This Jira search string can then be used in a Jira search in which its output can be used for the 'Jira to PureProject' option.<br />
+                    *The output will be in the 'Output' box and instead of a file.
+                    <div className='HelpSteps'>
+                        <ul>1. Navigate to the 'Test Cycles' location within Jira. Right click on you cycle and hit 'Export Cycle'. This will output a Cycle-xxx.CSV file.</ul>
+                        <ul><Image border='0' src={CycleToJira_ScreenShot1} rounded/></ul>
+                        <ul>2. Navigate to the <Link to='/Transformer'>Transformer</Link> page and select the 'Cycle-xxx.xml' file as in input. Make sure the 'Cycle to Jira' radio button is selected. Hit 'Transform'.</ul>
+                        <ul><Image border='0' src={CycleToJira_ScreenShot2} rounded/></ul>
+                        <ul>The resulting search string will be in the 'Output' box.</ul>
+                    </div>
+                    <div className='HelpSteps'>
+                        <h4>Using the search string</h4>
+                        <ul>To use the search string, navigate to the search page in Jira. Hit 'Advanced' copy-and-paste the search string into the field and hit search.</ul>
+                        <ul><Image border='0' src={CycleToJira_ScreenShot3} rounded/></ul>
+                        <ul>Use this search result for a <Link pageid='jPP' to='/' onClick={this.redirect}>Jira to PureProject'</Link> function.</ul>
+                    </div>
+                    <div className='buffer' />
+                </div>
             </div>
         } else {
             content = 
