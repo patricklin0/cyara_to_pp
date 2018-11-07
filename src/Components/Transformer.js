@@ -86,24 +86,83 @@ class Transformer extends React.Component {
 
                 var replacementCount = 0;
                 var replacements = [];
-                if(TestCases[i].children[12].children.length > 0) {
-                    for(var a = 0; a < TestCases[i].children[12].children[1].children.length; a++) {
-                        for(var b = 0; b < TestCases[i].children[12].children[1].children[a].attributes.length; b++) {
-                            if(TestCases[i].children[12].children[1].children[a].attributes[b].nodeName === 'name') {
-                                if(TestCases[i].children[12].children[1].children[a].attributes[b].nodeValue === 'Empty') continue;
-                                replacements.push([TestCases[i].children[12].children[1].children[a].attributes[b].nodeValue, TestCases[i].children[12].children[1].children[a].innerHTML]);
+                // Looking for array positions
+                var tree_definition = {};
+                var nodes = [
+                    'Scenario',
+                    'DataInputs',
+                    'Steps',
+                    'CallSteps',
+                    'Description',
+                    'ExpectedText',
+                    'ReplyText'
+                ];
+                var block_tree_definition = {};
+                var blockNodes = [
+                    'BlockName',
+                    'FolderPath',
+                    'Steps',
+                    'CallSteps',
+                    'ExpectedText',
+                    'Description',
+                    'ReplyText'
+                ];
+                //console.log(TestCases)
+
+                // Under <TestCase> : Looking for 'DataInputs', 'Steps'
+                for(var ss = 0; ss < TestCases[i].children.length; ss++) {
+                    for(var tt = 0; tt < nodes.length; tt++) {
+                        //console.log(TestCases[i].children[ss].nodeName)
+                        if(TestCases[i].children[ss].nodeName === nodes[tt]) {
+                            tree_definition[nodes[tt]] = ss;
+                        }
+                    }
+                }
+                // Under <TestCase> -> <DataInputs> : Looking for 'Scenario'
+                for(var ss = 0; ss < TestCases[i].children[tree_definition['DataInputs']].children.length; ss++) {
+                    for(var tt = 0; tt < nodes.length; tt++) {
+                        //console.log(TestCases[i].children[ss].nodeName)
+                        if(TestCases[i].children[tree_definition['DataInputs']].children[ss].nodeName === nodes[tt]) {
+                            tree_definition[nodes[tt]] = ss;
+                        }
+                    }
+                }
+                // Under <TestCase> -> <Steps> : Looking for 'CallSteps'
+                for(var ss = 0; ss < TestCases[i].children[tree_definition['Steps']].children.length; ss++) {
+                    for(var tt = 0; tt < nodes.length; tt++) {
+                        //console.log(TestCases[i].children[ss].nodeName)
+                        if(TestCases[i].children[tree_definition['Steps']].children[ss].nodeName === nodes[tt]) {
+                            tree_definition[nodes[tt]] = ss;
+                        }
+                    }
+                }
+                if(TestCases[i].children[tree_definition['DataInputs']].children.length > 0) {
+                    for(var a = 0; a < TestCases[i].children[tree_definition['DataInputs']].children[tree_definition['Scenario']].children.length; a++) {
+                        for(var b = 0; b < TestCases[i].children[tree_definition['DataInputs']].children[tree_definition['Scenario']].children[a].attributes.length; b++) {
+                            if(TestCases[i].children[tree_definition['DataInputs']].children[tree_definition['Scenario']].children[a].attributes[b].nodeName === 'name') {
+                                if(TestCases[i].children[tree_definition['DataInputs']].children[tree_definition['Scenario']].children[a].attributes[b].nodeValue === 'Empty') continue;
+                                replacements.push([TestCases[i].children[tree_definition['DataInputs']].children[tree_definition['Scenario']].children[a].attributes[b].nodeValue, TestCases[i].children[tree_definition['DataInputs']].children[tree_definition['Scenario']].children[a].innerHTML]);
                             }
                         }
                     }
                 }
-                for(var j = 0; j < TestCases[i].children[13].children[1].children.length; j++) {
-                    if(TestCases[i].children[13].children[1].children[j].children[13].innerHTML === '') {
-                        if(TestCases[i].children[13].children[1].children[j].children[1].innerHTML !== '') {
+                for(var j = 0; j < TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children.length; j++) {
+                    if(TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children[tree_definition['Steps']].innerHTML === '') {
+                        // Under <TestCase> -> <Steps> -> <CallSteps> -> <Step> : Looking for 'Description', 'ExpectedText', 'ReplyText'
+                        for(var ss = 0; ss < TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children.length; ss++) {
+                            for(var tt = 0; tt < nodes.length; tt++) {
+                                //console.log(TestCases[i].children[ss].nodeName)
+                                if(TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children[ss].nodeName === nodes[tt]) {
+                                    tree_definition[nodes[tt]] = ss;
+                                }
+                            }
+                        }
+                        if(TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children[tree_definition['Description']].innerHTML !== '') {
                             var m;
                             var contains = false;
                             for(m = 0; m < tags.length; m++) {
-                                if(TestCases[i].children[13].children[1].children[j].children[1].innerHTML.includes('[' + tags[m][1] + ']')) {
-                                    results += resultNewLine + '>>' + '[' + tags[m][1] + '] = ' + TestCases[i].children[13].children[1].children[j].children[2].innerHTML;
+                                if(TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children[tree_definition['Description']].innerHTML.includes('[' + tags[m][1] + ']')) {
+                                    results += resultNewLine + '>>' + '[' + tags[m][1] + '] = ' + TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children[tree_definition['ExpectedText']].innerHTML;
                                     resultNewLine = '\n';
                                     contains = true;
                                     break;
@@ -111,38 +170,76 @@ class Transformer extends React.Component {
                             }
                             if(contains) continue;
                         }
-                        if(TestCases[i].children[13].children[1].children[j].children[2].innerHTML !== '') {
-                            if(TestCases[i].children[13].children[1].children[j].children[2].innerHTML === '{*}' && TestCases[i].children[13].children[1].children[j].children[1].innerHTML !== '') {
-                                steps += stepNewline + '>>' + TestCases[i].children[13].children[1].children[j].children[1].innerHTML + ": [Replace]"
+
+                        if(TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children[tree_definition['ExpectedText']].innerHTML !== '') {
+                            if(TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children[tree_definition['ExpectedText']].innerHTML === '{*}' && TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children[tree_definition['Description']].innerHTML !== '') {
+                                steps += stepNewline + '>>' + TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children[tree_definition['Description']].innerHTML + ": [Replace]"
                                 replacementCount++;
-                            } else if(TestCases[i].children[13].children[1].children[j].children[2].innerHTML === '{*}') {
+                            } else if(TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children[tree_definition['ExpectedText']].innerHTML === '{*}') {
                                 steps += stepNewline + '>>' + '[Replace]';
                                 replacementCount++;
                             } else {
-                                steps += stepNewline + '>>' + TestCases[i].children[13].children[1].children[j].children[2].innerHTML
+                                steps += stepNewline + '>>' + TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children[tree_definition['ExpectedText']].innerHTML
                             }
 
                             stepNewline = '\n';
                         }
-                        if(TestCases[i].children[13].children[1].children[j].children[4].innerHTML !== '') {
-                            steps += stepNewline + '>>' + TestCases[i].children[13].children[1].children[j].children[4].innerHTML
+                        if(TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children[tree_definition['ReplyText']].innerHTML !== '') {
+                            steps += stepNewline + '>>' + TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children[tree_definition['ReplyText']].innerHTML
                             stepNewline = '\n';
                         }
                     } else {
+                        //console.log(Blocks)
                         for(var k = 0; k < Blocks.length; k++) {
-                            var pathName = Blocks[k].children[2].innerHTML + '\\' + Blocks[k].children[0].innerHTML;
-                            if(TestCases[i].children[13].children[1].children[j].children[13].innerHTML === pathName) {
-                                for(var l = 0; l < Blocks[k].children[4].children[0].children.length; l++) {
-                                    if(Blocks[k].children[4].children[0].children[l].children[2].innerHTML !== '') {
-                                        if(Blocks[k].children[4].children[0].children[l].children[2].innerHTML === '{*}') {
-                                            steps += stepNewline + '>>' + Blocks[k].children[4].children[0].children[l].children[1].innerHTML + ': [Replace]';
-                                            replacementCount++;
-                                        } else {
-                                            steps += stepNewline + '>>' + Blocks[k].children[4].children[0].children[l].children[2].innerHTML;
+                            // Under <Blocks> -> <Block>: Looking for 'BlockName', FolderPath', 'Steps'
+                            for(var ss = 0; ss < Blocks[k].children.length; ss ++) {
+                                for(var tt = 0; tt < blockNodes.length; tt++) {
+                                    if(Blocks[k].children[ss].nodeName === blockNodes[tt]) {
+                                        block_tree_definition[blockNodes[tt]] = ss;
+                                    }
+                                }
+                            }
+                            // Under <Blocks> -> <Block> -> <Steps>: Looking for 'CallSteps'
+                            for(var ss = 0; ss < Blocks[k].children[block_tree_definition['Steps']].children.length; ss ++) {
+                                for(var tt = 0; tt < blockNodes.length; tt++) {
+                                    if(Blocks[k].children[block_tree_definition['Steps']].children[ss].nodeName === blockNodes[tt]) {
+                                        block_tree_definition[blockNodes[tt]] = ss;
+                                    }
+                                }
+                            }//
+                            var pathName = Blocks[k].children[block_tree_definition['FolderPath']].innerHTML + '\\' + Blocks[k].children[block_tree_definition['BlockName']].innerHTML;
+                            if(TestCases[i].children[tree_definition['Steps']].children[tree_definition['CallSteps']].children[j].children[tree_definition['Steps']].innerHTML === pathName) {
+                                // Under <Blocks> -> <Block> -> <Steps>: Looking for 'CallSteps'
+                                for(var ss = 0; ss < Blocks[k].children[block_tree_definition['Steps']].children.length; ss ++) {
+                                    for(var tt = 0; tt < blockNodes.length; tt++) {
+                                        if(Blocks[k].children[block_tree_definition['Steps']].children[ss].nodeName === blockNodes[tt]) {
+                                            block_tree_definition[blockNodes[tt]] = ss;
                                         }
                                     }
-                                    if(Blocks[k].children[4].children[0].children[l].children[4].innerHTML !== '') {
-                                        steps += stepNewline + '>>' + Blocks[k].children[4].children[0].children[l].children[4].innerHTML;
+                                }
+                                for(var l = 0; l < Blocks[k].children[block_tree_definition['Steps']].children[block_tree_definition['CallSteps']].children.length; l++) {
+                                    // Under <Blocks> -> <Block> -> <Steps> -> <CallSteps>: Looking for 'Description', 'ExpectedText', 'ReplyText'
+                                    for(var ss = 0; ss < Blocks[k].children[block_tree_definition['Steps']].children[block_tree_definition['CallSteps']].children[l].children.length; ss ++) {
+                                        for(var tt = 0; tt < blockNodes.length; tt++) {
+                                            if(Blocks[k].children[block_tree_definition['Steps']].children[block_tree_definition['CallSteps']].children[l].children[ss].nodeName === blockNodes[tt]) {
+                                                block_tree_definition[blockNodes[tt]] = ss;
+                                            }
+                                        }
+                                    }                                    
+                                    try {
+                                        if(Blocks[k].children[block_tree_definition['Steps']].children[block_tree_definition['CallSteps']].children[l].children[block_tree_definition['ExpectedText']].innerHTML !== '') {
+                                            if(Blocks[k].children[block_tree_definition['Steps']].children[block_tree_definition['CallSteps']].children[l].children[block_tree_definition['ExpectedText']].innerHTML === '{*}') {
+                                                steps += stepNewline + '>>' + Blocks[k].children[block_tree_definition['Steps']].children[block_tree_definition['CallSteps']].children[l].children[block_tree_definition['Description']].innerHTML + ': [Replace]';
+                                                replacementCount++;
+                                            } else {
+                                                steps += stepNewline + '>>' + Blocks[k].children[block_tree_definition['Steps']].children[block_tree_definition['CallSteps']].children[l].children[block_tree_definition['ExpectedText']].innerHTML;
+                                            }
+                                        }
+                                        if(Blocks[k].children[block_tree_definition['Steps']].children[block_tree_definition['CallSteps']].children[l].children[block_tree_definition['ReplyText']].innerHTML !== '') {
+                                            steps += stepNewline + '>>' + Blocks[k].children[block_tree_definition['Steps']].children[block_tree_definition['CallSteps']].children[l].children[block_tree_definition['ReplyText']].innerHTML;
+                                        }
+                                    } catch (e) {
+                                        console.log('Block with no steps.');
                                     }
                                     stepNewline = '\n';
                                 }
