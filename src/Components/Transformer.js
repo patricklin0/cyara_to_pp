@@ -228,6 +228,15 @@ class Transformer extends React.Component {
                                     }                                    
                                     try {
                                         if(Blocks[k].children[block_tree_definition['Steps']].children[block_tree_definition['CallSteps']].children[l].children[block_tree_definition['ExpectedText']].innerHTML !== '') {
+                                            var thisDescription = Blocks[k].children[block_tree_definition['Steps']].children[block_tree_definition['CallSteps']].children[l].children[block_tree_definition['Description']].innerHTML
+                                            var containsTag = false;
+                                            for(var ti = 0; ti < tags.length; ti++) {
+                                                if('[' + tags[ti][1] + ']' === thisDescription) {
+                                                    results += resultNewLine + '[' + tags[ti][1] + '] = ' + Blocks[k].children[block_tree_definition['Steps']].children[block_tree_definition['CallSteps']].children[l].children[block_tree_definition['ExpectedText']].innerHTML;
+                                                    containsTag = true;
+                                                }
+                                            }
+                                            if(containsTag) continue;
                                             if(Blocks[k].children[block_tree_definition['Steps']].children[block_tree_definition['CallSteps']].children[l].children[block_tree_definition['ExpectedText']].innerHTML === '{*}') {
                                                 steps += stepNewline + '>>' + Blocks[k].children[block_tree_definition['Steps']].children[block_tree_definition['CallSteps']].children[l].children[block_tree_definition['Description']].innerHTML + ': [Replace]';
                                                 replacementCount++;
@@ -242,6 +251,7 @@ class Transformer extends React.Component {
                                         console.log('Block with no steps.');
                                     }
                                     stepNewline = '\n';
+                                    resultNewLine = '\n';
                                 }
                                 break;
                             }
@@ -367,7 +377,7 @@ class Transformer extends React.Component {
             XLSX.utils.book_append_sheet(wb, ws, "TestCases");
             
             // Generate Excel File
-            XLSX.writeFile(wb, "sheetjs.xlsx");
+            //XLSX.writeFile(wb, "sheetjs.xlsx");
         } catch (e) {
             alert(e + alertErrorMessage);;
             console.log(e);
