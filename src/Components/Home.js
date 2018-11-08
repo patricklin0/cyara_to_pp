@@ -10,6 +10,7 @@ class Home extends Component {
                 <h1>QA Tools Home page</h1>
                 <Link to='/Transformer'>Transformer</Link><br />
                 <Link to='/Help'>Help</Link>
+                <div id='version'>v1.6</div>
             </div>
         );
     }
