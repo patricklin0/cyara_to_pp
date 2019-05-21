@@ -285,8 +285,10 @@ class Transformer extends React.Component {
             XLSX.utils.book_append_sheet(wb, ws, "TestCases");
             
             // Generate Excel File 
+
             XLSX.writeFile(wb, "sheetjs.xlsx");
         } catch (e) {
+            console.log('test')
             alert(e + alertErrorMessage);;
             console.log(e);
         }
@@ -294,7 +296,6 @@ class Transformer extends React.Component {
     jiraParse(text) {
         var data = []
         data.push(this.generateSchedule('Open Hours'));
-
         try {
             var parser = new DOMParser();
             var xmlDoc = parser.parseFromString(text, 'text/xml');
@@ -371,13 +372,13 @@ class Transformer extends React.Component {
             console.log(e);
         }
         try {
-            //console.log(data)
+            console.log(data)
             var ws = XLSX.utils.aoa_to_sheet(data, { header:1, raw:true })
             var wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "TestCases");
             
             // Generate Excel File
-            //XLSX.writeFile(wb, "sheetjs.xlsx");
+            XLSX.writeFile(wb, "sheetjs.xlsx");
         } catch (e) {
             alert(e + alertErrorMessage);;
             console.log(e);
