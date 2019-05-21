@@ -10,6 +10,13 @@ import JiraToPureProject_ScreenShot3 from '../resources/JiraToPureProject_Screen
 import CycleToJira_ScreenShot1 from '../resources/CycleToJira_ScreenShot1.png';
 import CycleToJira_ScreenShot2 from '../resources/CycleToJira_ScreenShot2.png';
 import CycleToJira_ScreenShot3 from '../resources/CycleToJira_ScreenShot3.png';
+import PP_ScreenShot1 from '../resources/PP_ScreenShot1.png';
+import PP_ScreenShot2 from '../resources/PP_ScreenShot2.png';
+import PP_ScreenShot3 from '../resources/PP_ScreenShot3.png';
+import PP_ScreenShot4 from '../resources/PP_ScreenShot4.png';
+import PP_ScreenShot5 from '../resources/PP_ScreenShot5.png';
+import PP_ScreenShot6 from '../resources/PP_ScreenShot6.png';
+import cat from '../resources/confusedcat.png';
 
 import { Button, Col, Image } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -60,6 +67,8 @@ class Help extends Component {
                         <ul>4. Navigate to the <Link to='/Transformer'>Transformer</Link> page and select the 'TestCases.xml' file as an input. Make sure the 'Cyara to PureProject' radio button is selected. Hit 'Transform'.</ul>
                         <ul><Image border='0' src={CyaraToPureProject_ScreenShot3} rounded/></ul>
                         <ul>The resulting output file will be ready to be imported into PureProject.</ul>
+                        <br /><br />
+                        <ul>To import the resulting file, please refer to this <Link pageid='pp' to='/' onClick={this.redirect}>help page</Link>.</ul>
                     </div>
                     <div className='buffer' />
                 </div>
@@ -69,6 +78,7 @@ class Help extends Component {
             <div>
                 <h3 className='FeatureTitle'>Jira to PureProject</h3>
                 <div className='HelpParagraph'>
+                    !!! 5/21/2019 There's currently a large bug with this function. May or may not work as intended. <br /><br />
                     This option will transform a file exported from Jira and transforms it into a file can be consued by PureProject's import function. <br />
                     *This function is only intended to be used with an export file from a search result page in Jira.
                     <div className='HelpSteps'>
@@ -79,6 +89,8 @@ class Help extends Component {
                         <ul>3. Navigate to the <Link to='/Transformer'>Transformer</Link> page and select the 'SearchRequest.xml' file as in input. Make sure the 'Jira to PureProject' radio button is selected. Hit 'Transform'.</ul>
                         <ul><Image border='0' src={JiraToPureProject_ScreenShot3} rounded/></ul>
                         <ul>The resulting output file will be ready to be imported into PureProject.</ul>
+                        <br /><br />
+                        <ul>To import the resulting file, please refer to this <Link pageid='pp' to='/' onClick={this.redirect}>help page</Link>.</ul>
                     </div>
                     <div className='buffer' />
                 </div>
@@ -101,16 +113,40 @@ class Help extends Component {
                         <h4>Using the search string</h4>
                         <ul>To use the search string, navigate to the search page in Jira. Hit 'Advanced' copy-and-paste the search string into the field and hit search.</ul>
                         <ul><Image border='0' src={CycleToJira_ScreenShot3} rounded/></ul>
-                        <ul>Use this search result for a <Link pageid='jPP' to='/' onClick={this.redirect}>Jira to PureProject'</Link> function.</ul>
+                        <ul>Use this search result for a <Link pageid='jPP' to='/' onClick={this.redirect}>Jira to PureProject</Link> function.</ul>
                     </div>
                     <div className='buffer' />
+                </div>
+            </div>
+        } else if(page === 'pp') {
+            content = 
+            <div>
+                <h3 className='FeatureTitle'>PureProject Import Instructions</h3>
+                <div className='HelpParagraph'>
+                    Both the 'Jira to PureProject' and 'Cyara to PureProject' options will output a file. This page will instruct you to import the file onto PureProject.
+                    <div className='HelpSteps'>
+                        <ul>1. Navigate to one of your projects and go to the Quality Tab.</ul>
+                        <ul><Image border='0' src={PP_ScreenShot1} rounded/></ul>
+                        <ul>2. Create a new test cycle (Skip this step if importing to existing cycle).</ul>
+                        <ul><Image border='0' src={PP_ScreenShot2} rounded/></ul>
+                        <ul>3. Hit update on your new created test cycle.</ul>
+                        <ul><Image border='0' src={PP_ScreenShot3} rounded/></ul>
+                        <ul>4. Hit Import Test Cases -> Choose File. Choose your file downloaded from 'Jira to PureProject' and 'Cyara to PureProject' then hit Import.</ul>
+                        <ul><Image border='0' src={PP_ScreenShot4} rounded/></ul>
+                        <ul>5. Your test case should now be imported. Select a 'Mapped Scenario' for all your test cases then hit 'Confirm Selection'.</ul>
+                        <ul><Image border='0' src={PP_ScreenShot5} rounded/></ul>
+                        <ul>6. PureProject will now have your test cases in the system.</ul>
+                        <ul><Image border='0' src={PP_ScreenShot6} rounded/></ul>
+                    </div>
                 </div>
             </div>
         } else {
             content = 
             <div>
                 <h3>
-                    You're not supposed to be able to reach this page. Please contact patrick.lin@genesys.com.
+                    You're not supposed to be able to reach this page. Congratulations, you confused the cat. Please contact patrick.lin@genesys.com.
+                    <br /><br />
+                    <ul id='confused_cat'><Image border='0' src={cat} rounded/></ul>
                 </h3>
             </div>
         }
@@ -124,6 +160,7 @@ class Help extends Component {
                             <ul><Button pageid='cPP' bsStyle='primary' onClick={this.navigate}>Cyara to PureProject</Button></ul>
                             <ul><Button pageid='jPP' bsStyle='primary' onClick={this.navigate}>Jira to PureProject</Button></ul>
                             <ul><Button pageid='cj' bsStyle='primary' onClick={this.navigate}>Cycle to Jira</Button></ul>
+                            <ul><Button pageid='pp' bsStyle='primary' onClick={this.navigate}>PureProject Import</Button></ul>
                         </div>
                     </Col>
                     <Col md={10} className='HelpContent'>
